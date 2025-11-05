@@ -1,0 +1,24 @@
+services:
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    build: .
+    image: bken824/my-backend-app:1.1 # Add this line to push the image to Docker Hub
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/baokim_dev
+      - MONGO_URL=mongodb://mongo:27017/baokim_dev
+    depends_on:
+      - mongo
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+volumes:
+  mongo-data:
