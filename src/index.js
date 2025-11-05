@@ -27,9 +27,6 @@ app.engine(
     handlebars.engine({
         extname: 'hbs',
         cache: false,
-        helpers: {
-            sum: (a, b) => a + b,
-        }
     }),
 );
 
