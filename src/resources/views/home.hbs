@@ -1,20 +1,26 @@
-<div class="mt-4">
-    <div class="row">
-        {{#each courses}}
-        <div class="col-sm-6 col-lg-4">
-            <div class="card card-course-item">
-                <a href="/courses/{{this.slug}}" >
-                    <img src="{{this.image}}" class="card-img-top" alt="...">
-                </a>
-                <div class="card-body">
-                    <a href="/courses/{{this.slug}}" >
-                        <h5 class="card-title">{{this.name}}</h5>
-                    </a>
-                    <p class="card-text">{{this.description}}</p>
-                    <a href="#" class="btn btn-primary">Mua khoa hoc.</a>
-                </div>
+<div class="page-header">
+    <h1>WELCOME!</h1>
+    <p>Loreem ipsum loreem ipsum loreem ipsum loreem ipsum</p>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title">Course 1</h2>
+                <p class="card-text">Loreem ipsum loreem ipsum loreem ipsum loreem ipsum</p>
+                <a href="#" class="btn btn-primary">Open Course</a>
             </div>
         </div>
-        {{/each}}
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title">Course 2</h2>
+                <p class="card-text">Loreem ipsum loreem ipsum loreem ipsum loreem ipsum.</p>
+                <a href="#" class="btn btn-primary">Open Course</a>
+            </div>
+        </div>
     </div>
 </div>

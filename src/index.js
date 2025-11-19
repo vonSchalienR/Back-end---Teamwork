@@ -5,7 +5,7 @@ const express = require('express');
 const sass = require('sass');
 const path = require('path');
 const handlebars = require('express-handlebars');
-const methodOverride = require('method-override')
+const methodOverride = require('method-override');
 const morgan = require('morgan');
 const route = require('./routes');
 const db = require('./config/db');
@@ -14,14 +14,20 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
-app.use(express.static(path.join(__dirname, 'resources/public')));
-app.use(express.urlencoded({ extended: true }));
 
-db.connect();
+// Palvellaan staattiset tiedostot kansiosta src/resources/public
+app.use(express.static(path.join(__dirname, 'resources/public')));
+
+// Lomake-data (POST) käyttöön
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+// Yhteys tietokantaan
+db.connect();
 
 // app.use(morgan('combined'))
 app.set('view cache', false);
+
 app.engine(
     'hbs',
     handlebars.engine({
@@ -31,9 +37,10 @@ app.engine(
 );
 
 app.set('view engine', 'hbs');
-app.use(methodOverride('_method'))
+app.use(methodOverride('_method'));
 app.set('views', path.join(__dirname, 'resources', 'views'));
 
+// Reitit
 route(app);
 
 app.listen(port, () => {
