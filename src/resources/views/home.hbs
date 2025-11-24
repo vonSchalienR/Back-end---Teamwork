@@ -10,35 +10,20 @@
 <div class="courses-shell">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="h5 mb-0">Featured courses</h2>
-        <span class="text-muted" style="font-size: 13px;">3 courses · Beginner–Intermediate</span>
     </div>
 
     <div class="course-grid">
-        <article class="course-card">
-            <div class="course-meta">Frontend · 6 lessons</div>
-            <h3 class="course-title">Course 1</h3>
-            <p class="course-desc">
-                Lorem ipsum loreem ipsum loreem ipsum loreem ipsum loreem ipsum.
-            </p>
-            <button class="btn btn-primary">Open course</button>
-        </article>
-
-        <article class="course-card">
-            <div class="course-meta">Backend · 8 lessons</div>
-            <h3 class="course-title">Course 2</h3>
-            <p class="course-desc">
-                Lorem ipsum loreem ipsum loreem ipsum loreem ipsum loreem ipsum.
-            </p>
-            <button class="btn btn-primary">Open course</button>
-        </article>
-
-        <article class="course-card">
-            <div class="course-meta">Fullstack · 10 lessons</div>
-            <h3 class="course-title">Course 3</h3>
-            <p class="course-desc">
-                Lorem ipsum loreem ipsum loreem ipsum loreem ipsum loreem ipsum.
-            </p>
-            <button class="btn btn-primary">Open course</button>
-        </article>
+        {{#if courses}}
+            {{#each courses}}
+                <article class="course-card">
+                    <div class="course-meta">{{#if level}}{{level}}{{else}}General{{/if}}</div>
+                    <h3 class="course-title">{{name}}</h3>
+                    <p class="course-desc">{{description}}</p>
+                    <a class="btn btn-primary" href="/courses/{{slug}}">Open course</a>
+                </article>
+            {{/each}}
+        {{else}}
+            <p class="text-muted">No courses available.</p>
+        {{/if}}
     </div>
 </div>
