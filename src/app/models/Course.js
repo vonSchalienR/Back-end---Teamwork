@@ -15,6 +15,8 @@ const CourseSchema = new Schema({
   { timestamps: true }
 );
 
+
+
 // Apply the plugin with overrideMethods option
 CourseSchema.plugin(mongooseDelete, { 
     deletedAt: true,
