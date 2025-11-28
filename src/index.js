@@ -3,6 +3,7 @@ require('dotenv').config();
 
 const express = require('express');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const User = require('./app/models/User');
 const sass = require('sass');
 const path = require('path');
@@ -26,10 +27,15 @@ app.use(express.json());
 
 // Session middleware (MemoryStore by default - not for production)
 app.use(
+    // Use connect-mongo as session store when MONGO_URI is available
     session({
         secret: process.env.SESSION_SECRET || 'change_this_secret',
         resave: false,
         saveUninitialized: false,
+        store: MongoStore.create({
+            mongoUrl: process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/baokim_dev',
+            ttl: 24 * 60 * 60, // 1 day
+        }),
         cookie: { maxAge: 1000 * 60 * 60 * 24 }, // 1 day
     })
 );
