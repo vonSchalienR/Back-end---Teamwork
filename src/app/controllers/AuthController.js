@@ -47,6 +47,46 @@ class AuthController {
             res.redirect('/');
         }
     }
+
+    // GET /register
+    showRegister(req, res) {
+        res.render('auth/register', { error: req.query.error, email: req.query.email, name: req.query.name });
+    }
+
+    // POST /register
+    async register(req, res, next) {
+        try {
+            const { name, email, password, confirmPassword } = req.body;
+            if (!name || !email || !password || !confirmPassword) {
+                return res.render('auth/register', { error: 'All fields are required.', name, email });
+            }
+
+            if (password !== confirmPassword) {
+                return res.render('auth/register', { error: 'Passwords do not match.', name, email });
+            }
+
+            if (password.length < 6) {
+                return res.render('auth/register', { error: 'Password must be at least 6 characters.', name, email });
+            }
+
+            // Check existing user
+            const exists = await User.findOne({ email });
+            if (exists) {
+                return res.render('auth/register', { error: 'Email is already registered.', name, email });
+            }
+
+            const user = new User({ name, email, password });
+            await user.save();
+
+            // Auto-login after registration
+            req.session.userId = user._id;
+            const redirectTo = req.session.returnTo || '/';
+            delete req.session.returnTo;
+            res.redirect(redirectTo);
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 module.exports = new AuthController();
