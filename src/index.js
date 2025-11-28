@@ -2,6 +2,8 @@
 require('dotenv').config();
 
 const express = require('express');
+const session = require('express-session');
+const User = require('./app/models/User');
 const sass = require('sass');
 const path = require('path');
 const handlebars = require('express-handlebars');
@@ -21,6 +23,34 @@ app.use(express.static(path.join(__dirname, 'resources/public')));
 // Lomake-data (POST) käyttöön
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+// Session middleware (MemoryStore by default - not for production)
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET || 'change_this_secret',
+        resave: false,
+        saveUninitialized: false,
+        cookie: { maxAge: 1000 * 60 * 60 * 24 }, // 1 day
+    })
+);
+
+// Make current user available to views via res.locals.user
+app.use(async (req, res, next) => {
+    res.locals.user = null;
+    try {
+        if (req.session && req.session.userId) {
+            const user = await User.findById(req.session.userId).lean();
+            res.locals.user = user || null;
+        }
+        next();
+    } catch (err) {
+        next(err);
+    }
+});
+
+// Protect routes: require login for non-whitelisted routes
+const authMiddleware = require('./middleware/auth');
+app.use(authMiddleware);
 
 // Yhteys tietokantaan
 db.connect();

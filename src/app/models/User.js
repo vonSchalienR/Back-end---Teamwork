@@ -31,4 +31,9 @@ UserSchema.pre('save', async function(next) {
   }
 })
 
+// Instance method to compare a plain password with hashed password
+UserSchema.methods.comparePassword = function(candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
+};
+
 module.exports = mongoose.model('User', UserSchema);
