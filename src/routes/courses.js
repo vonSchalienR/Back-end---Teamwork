@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const courseController = require('../app/controllers/CourseController');
+const { requireAdmin } = require('../middleware/authorize');
 
-router.get('/create', courseController.create.bind(courseController));
-router.post('/store', courseController.store.bind(courseController));
+router.get('/create', requireAdmin, courseController.create.bind(courseController));
+router.post('/store', requireAdmin, courseController.store.bind(courseController));
 
 router.get('/:id/edit', courseController.edit.bind(courseController));
 router.put('/:id', courseController.update.bind(courseController));

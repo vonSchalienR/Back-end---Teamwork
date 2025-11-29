@@ -69,9 +69,12 @@ app.engine(
     handlebars.engine({
         extname: 'hbs',
         cache: false,
-        helpers: {
-            sum: (a, b) => a + b,
-        }
+            helpers: {
+                sum: (a, b) => a + b,
+                ifEq: function (a, b, options) {
+                    return (a === b) ? options.fn(this) : options.inverse(this);
+                },
+            }
     }),
 );
 
