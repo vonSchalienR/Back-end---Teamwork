@@ -74,6 +74,13 @@ app.engine(
                 ifEq: function (a, b, options) {
                     return (a === b) ? options.fn(this) : options.inverse(this);
                 },
+                truncate: function (text, length) {
+                    if (text == null) return '';
+                    const s = String(text);
+                    const n = parseInt(length, 10) || 140;
+                    if (s.length <= n) return s;
+                    return s.slice(0, n) + '...';
+                },
             }
     }),
 );

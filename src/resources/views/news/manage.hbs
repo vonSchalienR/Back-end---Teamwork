@@ -1,0 +1,35 @@
+<div class="courses-shell">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h5 mb-0">Manage News</h2>
+    </div>
+
+    {{#if news}}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Published</th>
+                <th>Created</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each news}}
+            <tr>
+                <td>{{this.title}}</td>
+                <td>{{#if this.published}}Yes{{else}}No{{/if}}</td>
+                <td>{{this.createdAt}}</td>
+                <td>
+                    <a class="btn btn-sm btn-primary" href="/news/{{this._id}}/edit">Edit</a>
+                    <form action="/news/{{this._id}}?_method=DELETE" method="POST" style="display:inline-block;margin-left:8px;">
+                        <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    {{else}}
+        <p>No news items.</p>
+    {{/if}}
+</div>

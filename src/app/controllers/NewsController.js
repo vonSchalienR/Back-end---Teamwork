@@ -31,7 +31,7 @@ class NewsController {
     // GET /news/:slug
     async show(req, res, next) {
         try {
-            const item = await News.findOne({ slug: req.params.slug });
+            const item = await News.findOne({ slug: req.params.slug }).populate('author');
             if (!item) return res.status(404).send('News not found');
             res.render('news/show', { news: mongooseToObject(item) });
         } catch (err) {
@@ -62,6 +62,55 @@ class NewsController {
 
             await news.save();
             res.redirect(`/news/${news.slug}`);
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    // GET /news/manage (admin)
+    async manage(req, res, next) {
+        try {
+            const items = await News.find({}).sort({ createdAt: -1 });
+            res.render('news/manage', { news: multipleMongooseToObject(items) });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    // GET /news/:id/edit (admin)
+    async edit(req, res, next) {
+        try {
+            const item = await News.findById(req.params.id);
+            if (!item) return res.status(404).send('News not found');
+            res.render('news/edit', { news: mongooseToObject(item) });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    // PUT /news/:id (admin)
+    async update(req, res, next) {
+        try {
+            const { title, content, image, published } = req.body;
+            const update = { title, content, image, published: published === 'on' || published === 'true' };
+            // regenerate slug if title changed
+            const existing = await News.findById(req.params.id);
+            if (!existing) return res.status(404).send('News not found');
+            if (title && title !== existing.title) {
+                update.slug = await this.generateSlug(title, req.params.id);
+            }
+            const item = await News.findByIdAndUpdate(req.params.id, update, { new: true, runValidators: true });
+            res.redirect(`/news/${item.slug}`);
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    // DELETE /news/:id (admin)
+    async delete(req, res, next) {
+        try {
+            await News.deleteOne({ _id: req.params.id });
+            res.redirect('/news/manage');
         } catch (err) {
             next(err);
         }
