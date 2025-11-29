@@ -6,7 +6,7 @@
         <div class="alert alert-danger">{{error}}</div>
     {{/if}}
 
-    <form action="/register" method="POST" class="form-auth">
+    <form id="registerForm" action="/register" method="POST" class="form-auth">
         <div class="form-group">
             <label for="name">Full name</label>
             <input id="name" name="name" type="text" class="form-control" required value="{{name}}">
@@ -33,3 +33,36 @@
         </div>
     </form>
 </div>
+
+<script>
+    (function() {
+        const form = document.getElementById('registerForm');
+        if (!form) return;
+
+        form.addEventListener('submit', function (e) {
+            const pwd = form.querySelector('input[name="password"]').value || '';
+            const cpwd = form.querySelector('input[name="confirmPassword"]').value || '';
+            // Remove any existing client-side alert
+            const existing = form.querySelector('.client-alert');
+            if (existing) existing.remove();
+
+            if (pwd !== cpwd) {
+                e.preventDefault();
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-danger client-alert';
+                alert.textContent = 'Passwords do not match.';
+                form.parentNode.insertBefore(alert, form);
+                return false;
+            }
+
+            if (pwd.length < 6) {
+                e.preventDefault();
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-danger client-alert';
+                alert.textContent = 'Password must be at least 6 characters.';
+                form.parentNode.insertBefore(alert, form);
+                return false;
+            }
+        });
+    })();
+</script>

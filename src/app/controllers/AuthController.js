@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const { isValidEmail, isValidPassword } = require('../../util/validators');
 
 class AuthController {
     // GET /login
@@ -13,6 +14,10 @@ class AuthController {
             const { email, password } = req.body;
             if (!email || !password) {
                 return res.render('auth/login', { error: 'Email and password are required.', email });
+            }
+
+            if (!isValidEmail(email)) {
+                return res.render('auth/login', { error: 'Please enter a valid email address.', email });
             }
 
             const user = await User.findOne({ email: email });
@@ -61,12 +66,16 @@ class AuthController {
                 return res.render('auth/register', { error: 'All fields are required.', name, email });
             }
 
+            if (!isValidEmail(email)) {
+                return res.render('auth/register', { error: 'Please enter a valid email address.', name, email });
+            }
+
             if (password !== confirmPassword) {
                 return res.render('auth/register', { error: 'Passwords do not match.', name, email });
             }
 
-            if (password.length < 6) {
-                return res.render('auth/register', { error: 'Password must be at least 6 characters.', name, email });
+            if (!isValidPassword(password)) {
+                return res.render('auth/register', { error: 'Password must be at least 6 characters and include letters and numbers.', name, email });
             }
 
             // Check existing user
