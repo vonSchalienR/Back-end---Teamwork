@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const { isValidEmail, isValidPassword } = require('../../util/validators');
 
+
+
 class AuthController {
     // GET /login
     showLogin(req, res) {
@@ -12,22 +14,25 @@ class AuthController {
     async login(req, res, next) {
         try {
             const { email, password } = req.body;
-            if (!email || !password) {
-                return res.render('auth/login', { error: 'Email and password are required.', email });
+            const rawEmail = email.trim().toLowerCase();
+
+            if (!rawEmail || !password) {
+                return res.render('auth/login', { error: 'Email and password are required.', email: rawEmail });
             }
 
-            if (!isValidEmail(email)) {
-                return res.render('auth/login', { error: 'Please enter a valid email address.', email });
+            if (!isValidEmail(rawEmail)) {
+                return res.render('auth/login', { error: 'Please enter a valid email address.', email: rawEmail });
             }
 
-            const user = await User.findOne({ email: email });
+
+            const user = await User.findOne({ email: rawEmail });
             if (!user) {
-                return res.render('auth/login', { error: 'Invalid email or password.', email });
+                return res.render('auth/login', { error: 'Invalid email or password.', email: rawEmail });
             }
 
             const matched = await user.comparePassword(password);
             if (!matched) {
-                return res.render('auth/login', { error: 'Invalid email or password.', email });
+                return res.render('auth/login', { error: 'Invalid email or password.', email: rawEmail });
             }
 
             // Login success — store user id in session
@@ -62,29 +67,31 @@ class AuthController {
     async register(req, res, next) {
         try {
             const { name, email, password, confirmPassword } = req.body;
+            const rawEmail = email.trim().toLowerCase();
+
             if (!name || !email || !password || !confirmPassword) {
-                return res.render('auth/register', { error: 'All fields are required.', name, email });
+                return res.render('auth/register', { error: 'All fields are required.', name, email: rawEmail });
             }
 
-            if (!isValidEmail(email)) {
-                return res.render('auth/register', { error: 'Please enter a valid email address.', name, email });
+            if (!isValidEmail(rawEmail)) {
+                return res.render('auth/register', { error: 'Please enter a valid email address.', name, email: rawEmail });
             }
 
             if (password !== confirmPassword) {
-                return res.render('auth/register', { error: 'Passwords do not match.', name, email });
+                return res.render('auth/register', { error: 'Passwords do not match.', name, email: rawEmail });
             }
 
             if (!isValidPassword(password)) {
-                return res.render('auth/register', { error: 'Password must be at least 6 characters and include letters and numbers.', name, email });
+                return res.render('auth/register', { error: 'Password must be at least 6 characters and include letters and numbers.', name, email: rawEmail });
             }
 
             // Check existing user
-            const exists = await User.findOne({ email });
+            const exists = await User.findOne({ email: rawEmail });
             if (exists) {
-                return res.render('auth/register', { error: 'Email is already registered.', name, email });
+                return res.render('auth/register', { error: 'Email is already registered.', name, email: rawEmail });
             }
 
-            const user = new User({ name, email, password });
+            const user = new User({ name, email: rawEmail, password });
             await user.save();
 
             // Auto-login after registration
