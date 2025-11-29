@@ -22,7 +22,7 @@
   "scripts": {
     "beautiful": "lint-staged",
     "start": "nodemon --inspect src/index.js",
-    "test": "jest",
+    "test": "jest --runInBand",
     "watch": "sass --watch src/resources/scss/:src/resources/public/css/"
   },
   "lint-staged": {
@@ -46,6 +46,7 @@
     "slugify": "^1.6.6"
   },
   "devDependencies": {
+    "@jest/globals": "^30.2.0",
     "jest": "^30.2.0",
     "lint-staged": "^16.1.2",
     "prettier": "^3.6.2",
