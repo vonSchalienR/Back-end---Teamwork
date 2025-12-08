@@ -25,10 +25,12 @@
         {{#if this.deleted}}
           <!-- Course đã bị soft delete - hiển thị nút Restore và Force Delete -->
           <form method="POST" action="/courses/{{this._id}}/restore?_method=PATCH" style="display:inline;">
+            <input type="hidden" name="_csrf" value="{{../csrfToken}}">
             <button type="submit" class="btn btn-success btn-sm">Restore</button>
           </form>
           <form method="POST" action="/courses/{{this._id}}/force?_method=DELETE" style="display:inline;" 
                 onsubmit="return confirm('Permanently delete this course? This cannot be undone!')">
+            <input type="hidden" name="_csrf" value="{{../csrfToken}}">
             <button type="submit" class="btn btn-danger btn-sm mt-4">Delete Forever</button>
           </form>
         {{else}}
@@ -62,6 +64,7 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <form id="delete-course-form" method="POST" style="display:inline;">
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
           <button type="submit" class="btn btn-danger">Delete</button>
         </form>
       </div>

@@ -6,6 +6,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const User = require('./app/models/User');
 const helmet = require('helmet');
+const csrf = require('csurf');
 const sass = require('sass');
 const path = require('path');
 const handlebars = require('express-handlebars');
@@ -66,9 +67,20 @@ app.use(
             mongoUrl: process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/baokim_dev',
             ttl: 24 * 60 * 60, // 1 day
         }),
-        cookie: { maxAge: 1000 * 60 * 60 * 24 }, // 1 day
+        cookie: {
+            maxAge: 1000 * 60 * 60 * 24, // 1 day
+            sameSite: 'lax',
+            secure: process.env.NODE_ENV === 'production',
+        },
     })
 );
+
+// CSRF protection using session-based tokens
+app.use(csrf());
+app.use((req, res, next) => {
+    res.locals.csrfToken = req.csrfToken();
+    next();
+});
 
 // Make current user available to views via res.locals.user
 app.use(async (req, res, next) => {
@@ -121,6 +133,14 @@ app.set('views', path.join(__dirname, 'resources', 'views'));
 
 // Reitit
 route(app);
+
+// Handle CSRF token errors with a clear 403
+app.use((err, req, res, next) => {
+    if (err.code === 'EBADCSRFTOKEN') {
+        return res.status(403).send('Invalid CSRF token');
+    }
+    next(err);
+});
 
 app.listen(port, () => {
     console.log(`App listening on port http://localhost:${port}`);

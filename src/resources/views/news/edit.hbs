@@ -6,6 +6,7 @@
     {{/if}}
 
     <form action="/news/{{news._id}}?_method=PUT" method="POST" class="form-auth">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
         <div class="form-group">
             <label for="title">Title</label>
             <input id="title" name="title" type="text" class="form-control" required value="{{news.title}}">

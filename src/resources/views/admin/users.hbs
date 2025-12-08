@@ -33,6 +33,7 @@
                     <button class="btn btn-sm btn-outline-secondary" disabled>Already admin</button>
                 {{else}}
                     <form method="POST" action="/admin/users/{{this._id}}/make-admin?_method=PATCH" class="d-inline">
+                        <input type="hidden" name="_csrf" value="{{../csrfToken}}">
                         <button type="submit" class="btn btn-sm btn-primary">Make admin</button>
                     </form>
                 {{/ifEq}}

@@ -1,5 +1,6 @@
 <div class="mt-4">
     <form method="POST" action="">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
         <div class="form-group">
             <label for="search-input">Key Word</label>
             <input type="text" class="form-control" name="q" id="search-input" placeholder="Type your keyword">

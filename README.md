@@ -1,18 +1,19 @@
 ﻿# Back-end Project (Courses + News)
 
-This repository contains a small Node.js / Express backend for a courses website. It includes:
+This repository contains a small Node.js / Express backend for a courses website (course catalog, news, admin controls). It includes:
 
 - Course management (create, edit, soft-delete) with slug generation
 - User model with authentication (register/login) using bcrypt + sessions stored in MongoDB
 - Admin-protected News (CRUD) with public listing and detail pages
-
-This README explains how to set up and run the project locally and highlights important implementation details.
+- Admin user management page to grant admin role
+- Security hardening: Helmet with CSP, CSRF protection, and rate limiting on `POST /login`
 
 **Main tech:** Node.js, Express, Handlebars (views), Mongoose (MongoDB), express-session + connect-mongo
 
 ## Quick start
 
 Requirements:
+
 - Node.js (16+ recommended)
 - MongoDB running locally or reachable via URI
 
@@ -28,8 +29,8 @@ npm install
 
 Required (recommended):
 
-- `MONGO_URI`  MongoDB connection string (defaults to `mongodb://127.0.0.1:27017/baokim_dev`)
-- `SESSION_SECRET`  a strong secret for sessions
+- `MONGO_URI` MongoDB connection string (defaults to `mongodb://127.0.0.1:27017/baokim_dev`)
+- `SESSION_SECRET` a strong secret for sessions
 
 Example `.env`:
 
@@ -47,14 +48,21 @@ npm run start
 
 Open http://localhost:3000
 
+4. Run tests (Jest)
+
+```powershell
+npm test
+```
+
 ## Main routes (overview)
 
-- `/`  Home (shows featured courses)
-- `/login`, `/register`, `/logout`  authentication
-- `/courses`  courses routes (`/courses/create` protected for admins)
-- `/news`  public news list
-- `/news/:slug`  news detail
-- `/news/create`, `/news/manage`, `/news/:id/edit`  admin-only news management
+- `/` Home (shows featured courses)
+- `/login`, `/register`, `/logout` authentication
+- `/courses` courses routes (`/courses/create` protected for admins)
+- `/news` public news list
+- `/news/:slug` news detail
+- `/news/create`, `/news/manage`, `/news/:id/edit` admin-only news management
+- `/admin/users` admin-only user list with "Make admin" action
 
 ## Authentication & Authorization
 
@@ -62,6 +70,8 @@ Open http://localhost:3000
 - Sessions are persisted in MongoDB using `connect-mongo` (configured in `src/index.js`).
 - `role` field on `User` (`'user'` or `'admin'`) controls admin privileges.
 - Middleware `src/middleware/authorize.js` provides `requireAuth` and `requireAdmin`.
+- Rate limiting on `POST /login` (5 attempts per 15 minutes per IP) via `src/middleware/rateLimit.js`.
+- CSRF protection enabled via `csurf` (session-based tokens exposed as `csrfToken` for forms).
 
 To grant admin to an existing user (quick):
 
@@ -69,7 +79,7 @@ To grant admin to an existing user (quick):
 2. Update the user document:
 
 ```js
-$db.users.updateOne({ email: 'you@example.com' }, { $set: { role: 'admin' } })
+$db.users.updateOne({ email: "you@example.com" }, { $set: { role: "admin" } });
 ```
 
 ## Views and helpers
@@ -80,8 +90,10 @@ $db.users.updateOne({ email: 'you@example.com' }, { $set: { role: 'admin' } })
 
 - `SESSION_SECRET` must be set to a strong secret in production.
 - Session cookie should be configured with `secure: true` when serving over HTTPS.
-- Add CSRF protection (`csurf`) and rate limiting for `POST /login` to harden the app.
-- Do not use MemoryStore for sessions in production  this project uses `connect-mongo`.
+- Helmet with CSP is enabled in `src/index.js` and whitelists YouTube embeds plus CDN scripts/styles.
+- Rate limiting protects login; consider adding per-account lockouts if needed.
+- CSRF protection is active; ensure forms include the `_csrf` hidden field.
+- Do not use MemoryStore for sessions in production this project uses `connect-mongo`.
 
 ## Development notes
 
@@ -90,9 +102,23 @@ $db.users.updateOne({ email: 'you@example.com' }, { $set: { role: 'admin' } })
 - Routes are in `src/routes` (registered from `src/routes/index.js`).
 - Static assets and views are under `src/resources/public` and `src/resources/views`.
 
+## Teamwork evaluation quick checklist (map to rubric)
+
+- MVC: Controllers in `src/app/controllers`, routes in `src/routes`, models in `src/app/models`.
+- Views: Handlebars templates (`src/resources/views`), includes partials/layouts to avoid repetition; >4 views (home, news, courses, auth, admin, profile, etc.).
+- Template engine: Handlebars configured in `src/index.js`.
+- Styling: SCSS compiled to `src/resources/public/css`; uses Bootstrap + custom styles; responsive layout.
+- Accessibility: Semantic headings, labels on forms, link text kept clear; ensure ARIA updates when adding new UI.
+- Persistence: MongoDB via Mongoose; models read/write data (`Course`, `User`, `News`).
+- AuthZ/AuthN: Session-based auth, role-based admin, protected routes, login/logout; rate-limited login.
+- Sessions/Cookies: `express-session` + `connect-mongo`.
+- Routers separated: See `src/routes` and controllers.
+- Automated tests: Jest configured; sample validators test present; run `npm test`.
+- Security: Helmet CSP, rate limiting, password hashing.
+
 ## Next improvements (suggested)
 
-- Add CSRF protection and rate limits
+- Add per-account lockout / MFA for auth
 - Add flash messages for UX
 - Normalize emails (lowercase) and improve validation
 - Add deployment configuration (Docker, CI)
@@ -102,4 +128,5 @@ $db.users.updateOne({ email: 'you@example.com' }, { $set: { role: 'admin' } })
 If you'd like to contribute, please open an issue or create a pull request. Keep PRs small and focused; include descriptive commit messages and testing steps.
 
 ---
+
 Project maintained by the team. For local help, contact your project members or open an issue in this repo.

@@ -1,6 +1,7 @@
 <div class="mt-4">
     <h3>Create a New Course</h3>
     <form method="POST" action="/courses/store">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
     <div class="form-group">
         <label for="name">Name</label>
         <input type="text" name="name" class="form-control" id="name" >
