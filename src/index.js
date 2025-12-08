@@ -19,10 +19,32 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Security headers
+// Security headers with CSP allowing YouTube, Bootstrap CDN, jQuery CDN
 app.use(
     helmet({
-        contentSecurityPolicy: false, 
+        contentSecurityPolicy: {
+            useDefaults: true,
+            directives: {
+                "default-src": ["'self'"],
+                "script-src": [
+                    "'self'",
+                    "https://cdn.jsdelivr.net",
+                    "https://code.jquery.com",
+                    "https://cdnjs.cloudflare.com",
+                    "https://stackpath.bootstrapcdn.com",
+                ],
+                "style-src": [
+                    "'self'",
+                    "'unsafe-inline'",
+                    "https://cdn.jsdelivr.net",
+                    "https://stackpath.bootstrapcdn.com",
+                ],
+                "font-src": ["'self'", "https://cdn.jsdelivr.net"],
+                "img-src": ["'self'", "data:", "https://i.ytimg.com"],
+                "frame-src": ["'self'", "https://www.youtube.com"],
+                "connect-src": ["'self'"]
+            },
+        },
     })
 );
 
