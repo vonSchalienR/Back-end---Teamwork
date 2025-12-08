@@ -3,6 +3,7 @@ const authRouter = require('./auth');
 const siteRouter = require('./site');
 const courseRouter = require('./courses');
 const meRouter = require('./me');
+const adminRouter = require('./admin');
 
 function route(app) {
     app.use('/', siteRouter);
@@ -10,6 +11,7 @@ function route(app) {
     app.use('/news', newsRouter);
     app.use('/courses', courseRouter);
     app.use('/me', meRouter);
+    app.use('/admin', adminRouter);
 }
 
 module.exports = route;

@@ -1,0 +1,43 @@
+<div class="d-flex justify-content-between align-items-center mt-4 mb-3">
+    <h2 class="mb-0">User Management</h2>
+    <span class="text-muted">Admin only</span>
+</div>
+
+<table class="table table-hover align-middle">
+    <thead class="thead-light">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Role</th>
+            <th scope="col">Created</th>
+            <th scope="col" class="text-right">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each users}}
+        <tr>
+            <th scope="row">{{sum @index 1}}</th>
+            <td>{{this.name}}</td>
+            <td>{{this.email}}</td>
+            <td>
+                {{#ifEq this.role 'admin'}}
+                    <span class="badge badge-success">admin</span>
+                {{else}}
+                    <span class="badge badge-secondary">user</span>
+                {{/ifEq}}
+            </td>
+            <td>{{this.createdAt}}</td>
+            <td class="text-right">
+                {{#ifEq this.role 'admin'}}
+                    <button class="btn btn-sm btn-outline-secondary" disabled>Already admin</button>
+                {{else}}
+                    <form method="POST" action="/admin/users/{{this._id}}/make-admin?_method=PATCH" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-primary">Make admin</button>
+                    </form>
+                {{/ifEq}}
+            </td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
