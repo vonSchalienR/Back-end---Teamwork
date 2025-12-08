@@ -5,6 +5,7 @@ const express = require('express');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const User = require('./app/models/User');
+const helmet = require('helmet');
 const sass = require('sass');
 const path = require('path');
 const handlebars = require('express-handlebars');
@@ -17,6 +18,13 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Security headers
+app.use(
+    helmet({
+        contentSecurityPolicy: false, 
+    })
+);
 
 // Palvellaan staattiset tiedostot kansiosta src/resources/public
 app.use(express.static(path.join(__dirname, 'resources/public')));
