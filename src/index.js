@@ -7,6 +7,7 @@ const MongoStore = require('connect-mongo');
 const User = require('./app/models/User');
 const helmet = require('helmet');
 const csrf = require('csurf');
+const isTest = process.env.NODE_ENV === 'test';
 const sass = require('sass');
 const path = require('path');
 const handlebars = require('express-handlebars');
@@ -100,8 +101,10 @@ app.use(async (req, res, next) => {
 const authMiddleware = require('./middleware/auth');
 app.use(authMiddleware);
 
-// Yhteys tietokantaan
-db.connect();
+// Yhteys tietokantaan (skip during tests)
+if (!isTest) {
+    db.connect();
+}
 
 // app.use(morgan('combined'))
 app.set('view cache', false);
@@ -142,6 +145,10 @@ app.use((err, req, res, next) => {
     next(err);
 });
 
-app.listen(port, () => {
-    console.log(`App listening on port http://localhost:${port}`);
-});
+if (!isTest) {
+    app.listen(port, () => {
+        console.log(`App listening on port http://localhost:${port}`);
+    });
+}
+
+module.exports = app;
