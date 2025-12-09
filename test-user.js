@@ -1,5 +1,5 @@
 const request = require("supertest");
-const app = require("../app"); // your Express app
+const app = require(".src/index.js");
 
 describe("POST /api/v1/users", () => {
 

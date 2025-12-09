@@ -139,7 +139,7 @@ class CourseController {
         }
     }
 
-    // DELETE /courses/:id/force (Hard Delete - xóa vĩnh viễn)
+    // DELETE /courses/:id/force (Hard Delete)
     async forceDelete(req, res, next) {
         try {
             await Course.deleteOne({ _id: req.params.id });
