@@ -1,5 +1,7 @@
 const User = require('../models/User');
 const { isValidEmail, isValidPassword } = require('../../util/validators');
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 
 
 
@@ -102,6 +104,60 @@ class AuthController {
         } catch (error) {
             next(error);
         }
+    }
+
+    // GET /reset
+    showReset(req, res) {
+        res.render('auth/reset', { error: req.query.error, email: req.query.email });
+    }
+    // POST /reset
+    async reset(req, res, next) {
+        try {
+            const { email } = req.body;
+            const rawEmail = email.trim().toLowerCase();
+            if (!rawEmail) {
+                return res.render('auth/reset', { error: 'Email is required.', email: rawEmail });
+            }
+            if (!isValidEmail(rawEmail)) {
+                return res.render('auth/reset', { error: 'Please enter a valid email address.', email: rawEmail });
+            }   
+            const user = await User.findOne({ email: rawEmail });
+            if (!user) {
+                return res.render('auth/reset', { error: 'No account found with that email.', email: rawEmail });
+            }  
+             
+            // generate a reset token and send an email
+            // Generate reset token
+            const token = crypto.randomBytes(32).toString("hex");
+            user.resetPasswordToken = token;
+            user.resetPasswordExpires = Date.now() + 3600000; // 1 hour expiry
+
+            await user.save();
+
+            // Send reset email
+            const resetUrl = `https://yourdomain.com/auth/reset-password?token=${token}`;
+
+            const transporter = nodemailer.createTransport({
+            host: "smtp.your-email.com",
+            port: 587,
+            auth: {
+                user: "your-smtp-user",
+                pass: "your-smtp-password"
+            }
+            });
+
+            await transporter.sendMail({
+            from: '"CourseSub" <no-reply@gmail.com>',
+            to: user.email,
+            subject: "Password Reset",
+            text: `You requested a password reset. Click the link below to reset your password:\n\n${resetUrl}`
+            });
+
+            return res.render('auth/reset', { error: 'If an account with that email exists, a reset link has been sent.', email: '' });
+
+        } catch (error) {
+            next(error);
+        }   
     }
 }
 

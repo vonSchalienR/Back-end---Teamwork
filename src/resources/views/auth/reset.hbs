@@ -1,28 +1,21 @@
-{{!-- Login view --}}
+{{!-- Reset password view --}}
 <div class="auth-shell">
-    <h2 class="h4">Sign in</h2>
+    <h2 class="h4">Reset password</h2>
 
     {{#if error}}
         <div class="alert alert-danger">{{error}}</div>
     {{/if}}
 
-    <form action="/login" method="POST" class="form-auth">
+    <form action="/reset" method="POST" class="form-auth">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         <div class="form-group">
             <label for="email">Email</label>
             <input id="email" name="email" type="email" class="form-control" required value="{{email}}">
         </div>
 
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input id="password" name="password" type="password" class="form-control" required>
-        </div>
-
         <div class="form-actions d-flex justify-content-between align-items-center">
-            <button type="submit" class="btn btn-primary">Sign in</button>
+            <button type="submit" class="btn btn-primary">Reset password</button>
             <a href="/register" class="text-muted">Create account</a>
-            <a href="/reset" class="text-muted">Reset password</a>
-        </div>
         </div>
     </form>
 </div>

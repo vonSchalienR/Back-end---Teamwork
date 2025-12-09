@@ -10,4 +10,7 @@ router.get('/logout', authController.logout.bind(authController));
 router.get('/register', authController.showRegister.bind(authController));
 router.post('/register', authController.register.bind(authController));
 
+router.get('/reset', authController.showReset.bind(authController));
+router.post('/reset', authController.reset.bind(authController));
+
 module.exports = router;

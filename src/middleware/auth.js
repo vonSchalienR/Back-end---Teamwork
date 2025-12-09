@@ -5,6 +5,7 @@ module.exports = function(req, res, next) {
         '/login',
         '/logout',
         '/register',
+        '/reset',
         '/favicon.ico',
     ];
 
